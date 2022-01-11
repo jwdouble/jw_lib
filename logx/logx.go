@@ -62,22 +62,26 @@ func logToSql(l *Logger) {
 	}
 }
 
-func (l *Logger) Info() {
+func (l *Logger) Info(s string) {
 	l.Level = zerolog.InfoLevel
+	l.content = s
 	l.Write()
 }
 
-func (l *Logger) Debug() {
+func (l *Logger) Debug(s string) {
 	l.Level = zerolog.DebugLevel
+	l.content = s
 	l.Write()
 }
 
-func (l *Logger) Warning() {
+func (l *Logger) Warning(s string) {
 	l.Level = zerolog.WarnLevel
+	l.content = s
 	l.Write()
 }
 
-func (l *Logger) Error() {
+func (l *Logger) Error(s string) {
 	l.Level = zerolog.ErrorLevel
+	l.content = s
 	l.Write()
 }
