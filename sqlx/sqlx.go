@@ -5,6 +5,8 @@ import (
 	"sync"
 
 	"jw.lib/conf"
+
+	_ "github.com/lib/pq"
 )
 
 // TODO config
@@ -16,7 +18,7 @@ type SqlMod struct {
 }
 
 const DefaultPgAddr = "host=150.158.7.96 user=postgres password=p1ssw0rd " +
-	"dbname=sys_log port=25432 sslmode=disable TimeZone=Asia/Shanghai statement_cache_mode=describe"
+	"dbname=logs port=25432 sslmode=disable TimeZone=Asia/Shanghai"
 
 const DefaultPggAppName = "defaultPgAppName"
 
@@ -40,14 +42,14 @@ func Register(c *conf.Connector, confFunc func(db *sql.DB)) {
 }
 
 func GetSqlOperator(dbName ...string) *sql.DB {
-	name := ""
+	var name interface{}
 	if len(dbName) == 0 {
-		name = DefaultPggAppName
+		name, _ = pool.Load(DefaultPggAppName)
 	} else {
-		name = dbName[0]
+		name, _ = pool.Load(dbName[0])
 	}
 
-	ans, _ := pool.Load(name)
+	res, _ := pool.Load(name)
 
-	return ans.(*SqlMod).db
+	return res.(*SqlMod).db
 }

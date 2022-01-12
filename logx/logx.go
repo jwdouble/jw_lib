@@ -1,4 +1,4 @@
-package Logger
+package logx
 
 import (
 	"sync"
@@ -10,33 +10,30 @@ import (
 	"jw.lib/sqlx"
 )
 
-type Log interface {
-	Redirect()
-	Debug()
-	Warning()
-	Error()
+var pool = sync.Pool{
+	New: func() interface{} {
+		return &Logger{std: conf.GetYaml("app.engine.log")}
+	},
 }
 
+// 加个调试堆栈
+
 type Logger struct {
-	Level zerolog.Level
+	level zerolog.Level
 	// 返回调用的方法名 --最好能返回在哪一行出的错
-	Position string
+	position string
 	content  string
 	std      string
 }
 
 func (l *Logger) Write() {
 	switch l.std {
-	case "sql":
-		logToSql(l)
+	case "postgres":
+		logToPg(l)
 	case "redis":
-
+	default:
+		logToPg(l)
 	}
-}
-
-// Redirect 可以重定向到redis、database、other
-func (l *Logger) Redirect(appName string) {
-	l.std = appName
 }
 
 var (
@@ -44,10 +41,10 @@ var (
 	onceRedis sync.Once
 )
 
-func logToSql(l *Logger) {
-	oncePg.Do(func() {
-		sqlx.Register(conf.AppPgConn.Value(sqlx.DefaultPgAddr), nil)
-	})
+func logToPg(l *Logger) {
+	//oncePg.Do(func() {
+	sqlx.Register(conf.AppPgConn.Value(sqlx.DefaultPgAddr), nil)
+	//})
 
 	client := sqlx.GetSqlOperator()
 	stmt, err := client.Prepare("insert into service (create_time, level, position, content) values($1, $2, $3, $4)")
@@ -55,33 +52,41 @@ func logToSql(l *Logger) {
 		panic(err.Error())
 	}
 
-	_, err = stmt.Exec(time.Now, l.Level, l.Position, l.content)
+	_, err = stmt.Exec(time.Now(), l.level, l.position, l.content)
 
 	if err != nil {
 		panic(err.Error())
 	}
 }
 
-func (l *Logger) Info(s string) {
-	l.Level = zerolog.InfoLevel
+func Info(s string) {
+	l := pool.Get().(*Logger)
 	l.content = s
+	l.level = zerolog.InfoLevel
 	l.Write()
+	pool.Put(l)
 }
 
-func (l *Logger) Debug(s string) {
-	l.Level = zerolog.DebugLevel
+func Debug(s string) {
+	l := pool.Get().(*Logger)
 	l.content = s
+	l.level = zerolog.DebugLevel
 	l.Write()
+	pool.Put(l)
 }
 
-func (l *Logger) Warning(s string) {
-	l.Level = zerolog.WarnLevel
+func Warn(s string) {
+	l := pool.Get().(*Logger)
 	l.content = s
+	l.level = zerolog.WarnLevel
 	l.Write()
+	pool.Put(l)
 }
 
-func (l *Logger) Error(s string) {
-	l.Level = zerolog.ErrorLevel
+func Error(s string) {
+	l := pool.Get().(*Logger)
 	l.content = s
+	l.level = zerolog.ErrorLevel
 	l.Write()
+	pool.Put(l)
 }
