@@ -17,34 +17,33 @@ type SqlMod struct {
 	db *sql.DB
 }
 
+const DefaultPgAppName = "defaultPgAppName"
 const DefaultPgAddr = "host=150.158.7.96 user=postgres password=p1ssw0rd " +
 	"dbname=logs port=25432 sslmode=disable TimeZone=Asia/Shanghai"
 
-const DefaultPggAppName = "defaultPgAppName"
-
 func init() {
-	Register(conf.AppPgConn.Value(DefaultPgAddr), nil)
+	Register(conf.AppPgConn.Value(DefaultPgAddr))
 }
 
-func Register(c *conf.Connector, confFunc func(db *sql.DB)) {
-	db, err := sql.Open(c.GetDriverName(), c.GetDSN())
+func Register(conn *conf.Connector, confFunc ...func(db *sql.DB)) {
+	db, err := sql.Open(conn.GetDriverName(), conn.GetAddr())
 	if err != nil {
 		panic(err)
 	}
 
-	if confFunc != nil {
-		confFunc(db)
+	for _, f := range confFunc {
+		f(db)
 	}
 
 	pg := &SqlMod{db: db}
-	pool.LoadOrStore(DefaultPggAppName, c.GetAppName())
-	pool.LoadOrStore(c.GetAppName(), pg)
+	pool.LoadOrStore(DefaultPgAppName, conn.GetAppName())
+	pool.LoadOrStore(conn.GetAppName(), pg)
 }
 
 func GetSqlOperator(dbName ...string) *sql.DB {
 	var name interface{}
 	if len(dbName) == 0 {
-		name, _ = pool.Load(DefaultPggAppName)
+		name, _ = pool.Load(DefaultPgAppName)
 	} else {
 		name, _ = pool.Load(dbName[0])
 	}

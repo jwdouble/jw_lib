@@ -3,7 +3,7 @@ package conf
 type Connector struct {
 	appName    string
 	driverName string
-	dns        string
+	addr       string
 }
 
 var (
@@ -12,7 +12,7 @@ var (
 )
 
 func (c *Connector) Value(s string) *Connector {
-	c.dns = s
+	c.addr = s
 	return c
 }
 
@@ -24,6 +24,6 @@ func (c *Connector) GetDriverName() string {
 	return c.driverName
 }
 
-func (c *Connector) GetDSN() string {
-	return c.dns
+func (c *Connector) GetAddr() string {
+	return c.addr
 }

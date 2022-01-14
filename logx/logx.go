@@ -42,9 +42,9 @@ var (
 )
 
 func logToPg(l *Logger) {
-	//oncePg.Do(func() {
-	sqlx.Register(conf.AppPgConn.Value(sqlx.DefaultPgAddr), nil)
-	//})
+	oncePg.Do(func() {
+		sqlx.Register(conf.AppPgConn.Value(sqlx.DefaultPgAddr), nil)
+	})
 
 	client := sqlx.GetSqlOperator()
 	stmt, err := client.Prepare("insert into service (create_time, level, position, content) values($1, $2, $3, $4)")
@@ -59,33 +59,33 @@ func logToPg(l *Logger) {
 	}
 }
 
-func Info(s string) {
+func Info(err error) {
 	l := pool.Get().(*Logger)
-	l.content = s
+	l.content = err.Error()
 	l.level = zerolog.InfoLevel
 	l.Write()
 	pool.Put(l)
 }
 
-func Debug(s string) {
+func Debug(err error) {
 	l := pool.Get().(*Logger)
-	l.content = s
+	l.content = err.Error()
 	l.level = zerolog.DebugLevel
 	l.Write()
 	pool.Put(l)
 }
 
-func Warn(s string) {
+func Warn(err error) {
 	l := pool.Get().(*Logger)
-	l.content = s
+	l.content = err.Error()
 	l.level = zerolog.WarnLevel
 	l.Write()
 	pool.Put(l)
 }
 
-func Error(s string) {
+func Error(err error) {
 	l := pool.Get().(*Logger)
-	l.content = s
+	l.content = err.Error()
 	l.level = zerolog.ErrorLevel
 	l.Write()
 	pool.Put(l)
