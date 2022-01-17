@@ -12,7 +12,7 @@ import (
 var csm = sync.Map{}
 
 func init() {
-	data, err := os.ReadFile("./config.yaml")
+	data, err := os.ReadFile("../config.yaml")
 	if err != nil {
 		fmt.Println(err)
 	}
@@ -28,7 +28,7 @@ func init() {
 
 		cols := strings.Split(str, ":")
 		if len(cols) > 1 {
-			pwd := YamlPwd(buf[:i])
+			pwd := yamlPwd(buf[:i])
 			csm.Store(pwd+"."+cols[0], cols[1])
 
 		}
@@ -43,11 +43,11 @@ func GetYaml(s string) string {
 	return ""
 }
 
-func YamlPwd(elems []string) string {
+func yamlPwd(elems []string) string {
 	per := 999
 	var pwd []string
 	for i := len(elems) - 1; i >= 0; i-- {
-		n := toolx.FirstNoEmptyIndex(elems[i])
+		n := toolx.FirstNotEmptyIndex(elems[i])
 		if n < per {
 			var temp []string
 			pwd = append(temp, elems[i])

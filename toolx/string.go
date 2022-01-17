@@ -1,6 +1,6 @@
 package toolx
 
-func FirstNoEmptyIndex(in string) int {
+func FirstNotEmptyIndex(in string) int {
 	for n, v := range in {
 		if v != 32 {
 			return n
