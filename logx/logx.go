@@ -1,6 +1,7 @@
 package logx
 
 import (
+	"encoding/json"
 	"sync"
 	"time"
 
@@ -9,29 +10,28 @@ import (
 	"jw.lib/conf"
 	"jw.lib/rdx"
 	"jw.lib/sqlx"
-	"jw.lib/timex"
 )
 
 var pool = sync.Pool{
 	New: func() interface{} {
 		//return &Logger{std: conf.GetYaml("app.engine.log")}
-		return &Logger{std: "redis"}
+		return &Logger{Std: "redis"}
 	},
 }
 
 // 加个调试堆栈
 
 type Logger struct {
-	createAt time.Time
-	level    zerolog.Level
+	CreateAt time.Time     `json:"createAt"`
+	Level    zerolog.Level `json:"level,omitempty"`
 	// todo 返回调用的方法名 --最好能返回在哪一行出的错
-	position string
-	content  string
-	std      string
+	Position string `json:"position,omitempty"`
+	Content  string `json:"content,omitempty"`
+	Std      string `json:"std,omitempty"`
 }
 
 func (l *Logger) Write() {
-	switch l.std {
+	switch l.Std {
 	case "postgres":
 		logToPg(l)
 	case "redis":
@@ -57,7 +57,7 @@ func logToPg(l *Logger) {
 		panic(err.Error())
 	}
 
-	_, err = stmt.Exec(l.createAt, l.level, l.position, l.content)
+	_, err = stmt.Exec(l.CreateAt, l.Level, l.Position, l.Content)
 
 	if err != nil {
 		panic(err.Error())
@@ -70,7 +70,13 @@ func logToRedis(l *Logger) {
 	})
 
 	cli := rdx.GetRdxOperator()
-	cli.Set("logx-"+l.createAt.Format(timex.DateTimeFormat)+"-"+l.level.String(), l.content, time.Hour*24*8)
+	// 用redis的有序集合 存贮log， jw sys每10s读一个集合
+	// 什么有序集合，垃圾。用列表，添加新日志时间常数级别。
+	buf, err := json.Marshal(l)
+	if err != nil {
+		panic(err)
+	}
+	cli.RPush("logx", string(buf))
 }
 
 func Info(err interface{}) {
@@ -91,13 +97,13 @@ func Error(err interface{}) {
 
 func newLogger(err interface{}, level zerolog.Level) {
 	l := pool.Get().(*Logger)
-	l.createAt = time.Now()
-	l.level = level
+	l.CreateAt = time.Now()
+	l.Level = level
 	switch err.(type) {
 	case string:
-		l.content = err.(string)
+		l.Content = err.(string)
 	case error:
-		l.content = err.(error).Error()
+		l.Content = err.(error).Error()
 	}
 
 	l.Write()
