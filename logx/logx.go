@@ -2,6 +2,8 @@ package logx
 
 import (
 	"encoding/json"
+	"runtime"
+	"strconv"
 	"sync"
 	"time"
 
@@ -96,11 +98,11 @@ func Error(err interface{}) {
 }
 
 func newLogger(err interface{}, level zerolog.Level) {
-	//ptr, file, line, _ := runtime.Caller(2)
-	//f := runtime.FuncForPC(ptr)
+	ptr, file, line, _ := runtime.Caller(2)
+	f := runtime.FuncForPC(ptr)
 	l := pool.Get().(*Logger)
-	//l.FuncName = f.Name()
-	//l.Position = file + ":" + strconv.Itoa(line)
+	l.FuncName = f.Name()
+	l.Position = file + ":" + strconv.Itoa(line)
 	l.CreateAt = time.Now()
 	l.Level = level
 	switch err.(type) {
