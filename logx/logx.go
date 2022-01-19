@@ -23,11 +23,11 @@ var pool = sync.Pool{
 
 type Logger struct {
 	CreateAt time.Time     `json:"createAt"`
-	Level    zerolog.Level `json:"level,omitempty"`
-	// todo 返回调用的方法名 --最好能返回在哪一行出的错
-	Position string `json:"position,omitempty"`
-	Content  string `json:"content,omitempty"`
-	Std      string `json:"std,omitempty"`
+	Level    zerolog.Level `json:"Alevel,omitempty"`
+	Position string        `json:"position,omitempty"`
+	FuncName string        `json:"funcName"`
+	Content  string        `json:"content,omitempty"`
+	Std      string        `json:"std,omitempty"`
 }
 
 func (l *Logger) Write() {
@@ -96,7 +96,11 @@ func Error(err interface{}) {
 }
 
 func newLogger(err interface{}, level zerolog.Level) {
+	//ptr, file, line, _ := runtime.Caller(2)
+	//f := runtime.FuncForPC(ptr)
 	l := pool.Get().(*Logger)
+	//l.FuncName = f.Name()
+	//l.Position = file + ":" + strconv.Itoa(line)
 	l.CreateAt = time.Now()
 	l.Level = level
 	switch err.(type) {
