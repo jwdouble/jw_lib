@@ -1,29 +1,13 @@
 package conf
 
-type Connector struct {
-	appName    string
-	driverName string
-	addr       string
-}
+import "github.com/spf13/viper"
 
-var (
-	AppPgConn    = Connector{appName: "app_pg", driverName: "postgres"}
-	AppRedisConn = Connector{appName: "app_redis", driverName: "redis"}
-)
+func Get(key string) interface{} {
+	viper.SetConfigFile(CONF_FILE_PATH)
+	err := viper.ReadInConfig()
+	if err != nil {
+		panic(err)
+	}
 
-func (c *Connector) Value(s string) *Connector {
-	c.addr = s
-	return c
-}
-
-func (c *Connector) GetAppName() string {
-	return c.appName
-}
-
-func (c *Connector) GetDriverName() string {
-	return c.driverName
-}
-
-func (c *Connector) GetAddr() string {
-	return c.addr
+	return viper.Get(key)
 }
