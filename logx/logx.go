@@ -16,7 +16,6 @@ import (
 
 var pool = sync.Pool{
 	New: func() interface{} {
-		//return &Logger{std: conf.GetYaml("app.engine.log")}
 		return &Logger{Std: "redis"}
 	},
 }
@@ -50,7 +49,7 @@ var (
 
 func logToPg(l *Logger) {
 	oncePg.Do(func() {
-		sqlx.Register(conf.AppPgConn.Value(sqlx.DefaultPgAddr))
+		sqlx.Register(sqlx.DefaultSqlDriver, conf.APP_PG_ADDR.Value(sqlx.DefaultSqlAddr))
 	})
 
 	cli := sqlx.GetSqlOperator()
@@ -68,12 +67,12 @@ func logToPg(l *Logger) {
 
 func logToRedis(l *Logger) {
 	onceRedis.Do(func() {
-		rdx.Register(conf.AppRedisConn.Value(rdx.DefaultRedisAddr))
+		rdx.Register(conf.APP_REDIS_ADDR.Value(rdx.DefaultRedisAddr), "")
 	})
 
 	cli := rdx.GetRdxOperator()
 	// 用redis的有序集合 存贮log， jw sys每10s读一个集合
-	// 什么有序集合，垃圾。用列表，添加新日志时间常数级别。
+	// 优化: 用列表，添加新日志时间常数级别。
 	buf, err := json.Marshal(l)
 	if err != nil {
 		panic(err)

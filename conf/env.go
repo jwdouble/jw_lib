@@ -10,7 +10,9 @@ type EnvVar string
 const CONF_FILE_PATH = "../config.yaml"
 
 const (
-	APP_PORT EnvVar = "APP_PORT"
+	APP_PORT       EnvVar = "APP_PORT"
+	APP_PG_ADDR    EnvVar = "APP_PG_ADDR"
+	APP_REDIS_ADDR EnvVar = "APP_REDIS_ADDR"
 )
 
 var sm sync.Map

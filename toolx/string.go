@@ -1,21 +1,12 @@
 package toolx
 
-func FirstNotEmptyIndex(in string) int {
-	for n, v := range in {
-		if v != 32 {
-			return n
-		}
-	}
-	return 0
-}
-
-func TrimAllSpace(s string) string {
-	var buf []byte
+func StrTrimAllRune(s string, r rune) string {
+	var buf []rune
 	for _, v := range s {
-		if v == 32 {
+		if v == r {
 			continue
 		}
-		buf = append(buf, byte(v))
+		buf = append(buf, v)
 	}
 	return string(buf)
 }

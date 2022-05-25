@@ -4,8 +4,6 @@ import (
 	"database/sql"
 	"sync"
 
-	"jw.lib/conf"
-
 	_ "github.com/lib/pq"
 )
 
@@ -17,38 +15,34 @@ type SqlMod struct {
 	db *sql.DB
 }
 
-const DefaultPgAppName = "defaultPgAppName"
-const DefaultPgAddr = "host=150.158.7.96 user=postgres password=p1ssw0rd " +
-	"dbname=logs port=25432 sslmode=disable TimeZone=Asia/Shanghai"
+const (
+	DefaultSqlDriver = "postgres"
+	DefaultSqlAddr   = "host=150.158.7.96 user=postgres password=p1ssw0rd dbname=jwdouble port=5432 sslmode=disable TimeZone=Asia/Shanghai"
+)
 
-func init() {
-	Register(conf.AppPgConn.Value(DefaultPgAddr))
-}
-
-func Register(conn *conf.Connector, confFunc ...func(db *sql.DB)) {
-	db, err := sql.Open(conn.GetDriverName(), conn.GetAddr())
+func Register(driver, addr string) {
+	db, err := sql.Open(driver, addr)
 	if err != nil {
 		panic(err)
 	}
 
-	for _, f := range confFunc {
-		f(db)
-	}
-
 	pg := &SqlMod{db: db}
-	pool.LoadOrStore(DefaultPgAppName, conn.GetAppName())
-	pool.LoadOrStore(conn.GetAppName(), pg)
+	pool.LoadOrStore(driver, pg)
 }
 
 func GetSqlOperator(dbName ...string) *sql.DB {
-	var name interface{}
+	var val interface{}
+
 	if len(dbName) == 0 {
-		name, _ = pool.Load(DefaultPgAppName)
+		val, _ = pool.Load(DefaultSqlDriver)
 	} else {
-		name, _ = pool.Load(dbName[0])
+		val, _ = pool.Load(dbName[0])
 	}
 
-	res, _ := pool.Load(name)
+	res, ok := val.(*SqlMod)
+	if ok {
+		return res.db
+	}
 
-	return res.(*SqlMod).db
+	panic("redis not register")
 }

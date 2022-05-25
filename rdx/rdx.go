@@ -4,34 +4,37 @@ import (
 	"sync"
 
 	"github.com/go-redis/redis"
-
-	"jw.lib/conf"
 )
 
 var pool sync.Map
 
-const defaultRedisAppName = "defaultRedisAppName"
-const DefaultRedisAddr = "150.158.7.96:16379"
+const (
+	DefaultRedisAddr = "150.158.7.96:6379"
+	RedisPwd         = "jw"
+)
 
-func Register(conn *conf.Connector, confFunc ...func()) {
+func Register(addr, pwd string) {
 	cli := redis.NewClient(&redis.Options{
-		Addr:     conn.GetAddr(),
-		Password: "",
+		Addr:     addr,
+		Password: pwd,
 	})
 
-	pool.LoadOrStore(defaultRedisAppName, conn.GetAppName())
-	pool.LoadOrStore(conn.GetAppName(), cli)
+	pool.LoadOrStore("redis", cli)
 }
 
 func GetRdxOperator(rdxName ...string) *redis.Client {
-	var name interface{}
+	var val interface{}
+
 	if len(rdxName) == 0 {
-		name, _ = pool.Load(defaultRedisAppName)
+		val, _ = pool.Load("redis")
 	} else {
-		name, _ = pool.Load(rdxName[0])
+		val, _ = pool.Load(rdxName[0])
 	}
 
-	res, _ := pool.Load(name)
+	res, ok := val.(*redis.Client)
+	if ok {
+		return res
+	}
 
-	return res.(*redis.Client)
+	panic("redis not register")
 }
