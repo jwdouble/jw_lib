@@ -16,11 +16,11 @@ import (
 
 var pool = sync.Pool{
 	New: func() interface{} {
-		return &Logger{Std: "redis"}
+		return &Logger{Std: conf.Get("lib.logx.driver")}
 	},
 }
 
-// 加个调试堆栈
+// TODO 加个调试堆栈
 
 type Logger struct {
 	CreateAt time.Time     `json:"createAt"`
@@ -38,7 +38,7 @@ func (l *Logger) Write() {
 	case "redis":
 		logToRedis(l)
 	default:
-		logToPg(l)
+		logToRedis(l)
 	}
 }
 
@@ -53,7 +53,7 @@ func logToPg(l *Logger) {
 	})
 
 	cli := sqlx.GetSqlOperator()
-	stmt, err := cli.Prepare("insert into service (create_time, level, position, content) values($1, $2, $3, $4)")
+	stmt, err := cli.Prepare(`insert into service (create_time, level, position, content) values($1, $2, $3, $4)`)
 	if err != nil {
 		panic(err.Error())
 	}
@@ -67,7 +67,7 @@ func logToPg(l *Logger) {
 
 func logToRedis(l *Logger) {
 	onceRedis.Do(func() {
-		rdx.Register(conf.APP_REDIS_ADDR.Value(rdx.DefaultRedisAddr), "")
+		rdx.Register(conf.APP_REDIS_ADDR.Value(rdx.DefaultRedisAddr), "jw")
 	})
 
 	cli := rdx.GetRdxOperator()
@@ -77,6 +77,7 @@ func logToRedis(l *Logger) {
 	if err != nil {
 		panic(err)
 	}
+	// list 列表 RPush
 	cli.RPush("logx", string(buf))
 }
 
