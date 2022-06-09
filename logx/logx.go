@@ -15,6 +15,8 @@ import (
 	"jw.lib/timex"
 )
 
+const pos = "pos"
+
 var pool = sync.Pool{
 	New: func() interface{} {
 		return &Logger{std: conf.Get("lib.logx.driver")}
@@ -22,14 +24,18 @@ var pool = sync.Pool{
 }
 
 type Logger struct {
-	Ts     string        `json:"ts"`
-	Level  zerolog.Level `json:"level,omitempty"`
-	Caller string        `json:"caller,omitempty"`
-	Msg    string        `json:"msg,omitempty"`
-	std    string
+	// 时间
+	Ts    string        `json:"ts"`
+	Level zerolog.Level `json:"level"`
+	// 函数名
+	Caller string `json:"caller"`
+	Msg    string `json:"msg"`
+	// 代码位置 可选 默认关闭原因：信息太长影响美观
+	Pos string `json:"pos,omitempty"`
+	std string
 }
 
-func (l *Logger) Write() {
+func (l *Logger) write() {
 	switch l.std {
 	case "postgres":
 		logToPg(l)
@@ -80,38 +86,48 @@ func logToRedis(l *Logger) {
 	cli.RPush("logx", string(buf))
 }
 
-func Info(info interface{}) {
-	newLogger(info, zerolog.InfoLevel)
+func Info(info interface{}, optional ...string) {
+	newLogger(info, zerolog.InfoLevel, optional...)
 }
 
-func Debug(debug interface{}) {
-	newLogger(debug, zerolog.DebugLevel)
+func Debug(debug interface{}, optional ...string) {
+	newLogger(debug, zerolog.DebugLevel, optional...)
 }
 
-func Warn(warn interface{}) {
-	newLogger(warn, zerolog.WarnLevel)
+func Warn(warn interface{}, optional ...string) {
+	newLogger(warn, zerolog.WarnLevel, optional...)
 }
 
-func Error(err interface{}) {
-	newLogger(err, zerolog.ErrorLevel)
+func Error(err interface{}, optional ...string) {
+	newLogger(err, zerolog.ErrorLevel, optional...)
 }
 
-func newLogger(err interface{}, level zerolog.Level) {
+func newLogger(msg interface{}, level zerolog.Level, optional ...string) {
 	l := pool.Get().(*Logger)
 
-	_, file, line, _ := runtime.Caller(2) // prt, file, line
-	//f := runtime.FuncForPC(ptr)
-	//l.FuncName = f.Name()
-	l.Caller = file + ": " + strconv.Itoa(line)
-	l.Ts = time.Now().Format(timex.DateTimeFormat)
-	l.Level = level
-	switch err.(type) {
-	case string:
-		l.Msg = err.(string)
-	case error:
-		l.Msg = err.(error).Error()
+	m := map[string]bool{}
+	for _, v := range optional {
+		m[v] = true
 	}
 
-	l.Write()
+	ptr, file, line, _ := runtime.Caller(2)
+	l.Caller = runtime.FuncForPC(ptr).Name()
+
+	if m[pos] {
+		l.Pos = file + ": " + strconv.Itoa(line)
+	}
+
+	l.Ts = time.Now().Format(timex.DateTimeFormat)
+
+	l.Level = level
+
+	switch msg.(type) {
+	case string:
+		l.Msg = msg.(string)
+	case error:
+		l.Msg = msg.(error).Error()
+	}
+
+	l.write()
 	pool.Put(l)
 }
