@@ -12,27 +12,25 @@ import (
 	"jw.lib/conf"
 	"jw.lib/rdx"
 	"jw.lib/sqlx"
+	"jw.lib/timex"
 )
 
 var pool = sync.Pool{
 	New: func() interface{} {
-		return &Logger{Std: conf.Get("lib.logx.driver")}
+		return &Logger{std: conf.Get("lib.logx.driver")}
 	},
 }
 
-// TODO 加个调试堆栈
-
 type Logger struct {
-	CreateAt time.Time     `json:"createAt"`
-	Level    zerolog.Level `json:"Alevel,omitempty"`
-	Position string        `json:"position,omitempty"`
-	FuncName string        `json:"funcName"`
-	Content  string        `json:"content,omitempty"`
-	Std      string        `json:"std,omitempty"`
+	Ts     string        `json:"ts"`
+	Level  zerolog.Level `json:"level,omitempty"`
+	Caller string        `json:"caller,omitempty"`
+	Msg    string        `json:"msg,omitempty"`
+	std    string
 }
 
 func (l *Logger) Write() {
-	switch l.Std {
+	switch l.std {
 	case "postgres":
 		logToPg(l)
 	case "redis":
@@ -53,12 +51,13 @@ func logToPg(l *Logger) {
 	})
 
 	cli := sqlx.GetSqlOperator()
-	stmt, err := cli.Prepare(`insert into service (create_time, level, position, content) values($1, $2, $3, $4)`)
+	// TODO: auto create table
+	stmt, err := cli.Prepare(`insert into logx (create_time, level, position, content) values($1, $2, $3, $4)`)
 	if err != nil {
 		panic(err.Error())
 	}
 
-	_, err = stmt.Exec(l.CreateAt, l.Level, l.Position, l.Content)
+	_, err = stmt.Exec(l.Ts, l.Level, l.Caller, l.Msg)
 
 	if err != nil {
 		panic(err.Error())
@@ -98,18 +97,19 @@ func Error(err interface{}) {
 }
 
 func newLogger(err interface{}, level zerolog.Level) {
-	ptr, file, line, _ := runtime.Caller(2)
-	f := runtime.FuncForPC(ptr)
 	l := pool.Get().(*Logger)
-	l.FuncName = f.Name()
-	l.Position = file + ":" + strconv.Itoa(line)
-	l.CreateAt = time.Now()
+
+	_, file, line, _ := runtime.Caller(2) // prt, file, line
+	//f := runtime.FuncForPC(ptr)
+	//l.FuncName = f.Name()
+	l.Caller = file + ": " + strconv.Itoa(line)
+	l.Ts = time.Now().Format(timex.DateTimeFormat)
 	l.Level = level
 	switch err.(type) {
 	case string:
-		l.Content = err.(string)
+		l.Msg = err.(string)
 	case error:
-		l.Content = err.(error).Error()
+		l.Msg = err.(error).Error()
 	}
 
 	l.Write()
