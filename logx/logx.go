@@ -80,16 +80,16 @@ func logToRedis(l *Logger) {
 	cli.RPush("logx", string(buf))
 }
 
-func Info(err interface{}) {
-	newLogger(err, zerolog.InfoLevel)
+func Info(info interface{}) {
+	newLogger(info, zerolog.InfoLevel)
 }
 
-func Debug(err interface{}) {
-	newLogger(err, zerolog.DebugLevel)
+func Debug(debug interface{}) {
+	newLogger(debug, zerolog.DebugLevel)
 }
 
-func Warn(err interface{}) {
-	newLogger(err, zerolog.WarnLevel)
+func Warn(warn interface{}) {
+	newLogger(warn, zerolog.WarnLevel)
 }
 
 func Error(err interface{}) {
