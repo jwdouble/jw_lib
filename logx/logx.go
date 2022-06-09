@@ -2,6 +2,7 @@ package logx
 
 import (
 	"encoding/json"
+	"fmt"
 	"runtime"
 	"strconv"
 	"sync"
@@ -42,7 +43,7 @@ func (l *Logger) write() {
 	case "redis":
 		logToRedis(l)
 	default:
-		logToRedis(l)
+		fmt.Println(l)
 	}
 }
 
@@ -86,20 +87,20 @@ func logToRedis(l *Logger) {
 	cli.RPush("logx", string(buf))
 }
 
-func Info(info interface{}, optional ...string) {
-	newLogger(info, zerolog.InfoLevel, optional...)
+func Info(format string, arg ...any, optional ...string) {
+	newLogger(fmt.Sprintf(format, arg), zerolog.InfoLevel, optional...)
 }
 
-func Debug(debug interface{}, optional ...string) {
-	newLogger(debug, zerolog.DebugLevel, optional...)
+func Debug(format string, arg ...any, optional ...string) {
+	newLogger(fmt.Sprintf(format, arg), zerolog.DebugLevel, optional...)
 }
 
-func Warn(warn interface{}, optional ...string) {
-	newLogger(warn, zerolog.WarnLevel, optional...)
+func Warn(format string, arg any, optional ...string) {
+	newLogger(fmt.Sprintf(format, arg), zerolog.WarnLevel, optional...)
 }
 
-func Error(err interface{}, optional ...string) {
-	newLogger(err, zerolog.ErrorLevel, optional...)
+func Error(format string, arg any, optional ...string) {
+	newLogger(fmt.Sprintf(format, arg), zerolog.ErrorLevel, optional...)
 }
 
 func newLogger(msg interface{}, level zerolog.Level, optional ...string) {

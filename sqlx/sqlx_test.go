@@ -2,9 +2,11 @@ package sqlx
 
 import (
 	"fmt"
-	"github.com/rs/zerolog/log"
-	"jw.lib/conf"
 	"testing"
+
+	"github.com/rs/zerolog/log"
+
+	"jw.lib/conf"
 )
 
 func Test_pg(t *testing.T) {

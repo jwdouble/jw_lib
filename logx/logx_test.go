@@ -2,11 +2,16 @@ package logx
 
 import (
 	"fmt"
-	"jw.lib/rdx"
 	"testing"
+
+	"jw.lib/rdx"
 )
 
-func Test_logx(t *testing.T) {
+func Test_log(t *testing.T) {
+	Info("this is %s code, no.%d", []any{"jw", 1})
+}
+
+func Test_redis(t *testing.T) {
 	Info("INFO TEST")
 
 	sc := rdx.GetRdxOperator().RPop("logx")
