@@ -16,7 +16,9 @@ import (
 	"jw.lib/timex"
 )
 
-const pos = "pos"
+const DisplayPos = "pos"
+
+type logStr string
 
 var pool = sync.Pool{
 	New: func() interface{} {
@@ -87,34 +89,45 @@ func logToRedis(l *Logger) {
 	cli.RPush("logx", string(buf))
 }
 
-func Info(format string, arg ...any, optional ...string) {
-	newLogger(fmt.Sprintf(format, arg), zerolog.InfoLevel, optional...)
+func Info(format string, arg ...any) {
+	newLogger(fmt.Sprintf(format, arg), zerolog.InfoLevel, arg)
 }
 
-func Debug(format string, arg ...any, optional ...string) {
-	newLogger(fmt.Sprintf(format, arg), zerolog.DebugLevel, optional...)
+func Debug(format string, withPos bool, arg ...any) {
+	if withPos {
+		newLogger(fmt.Sprintf(format, arg), zerolog.DebugLevel, DisplayPos)
+	} else {
+		newLogger(fmt.Sprintf(format, arg), zerolog.DebugLevel)
+	}
+
 }
 
-func Warn(format string, arg any, optional ...string) {
-	newLogger(fmt.Sprintf(format, arg), zerolog.WarnLevel, optional...)
+func Warn(format string, arg ...any) {
+	newLogger(fmt.Sprintf(format, arg), zerolog.WarnLevel, arg)
 }
 
-func Error(format string, arg any, optional ...string) {
-	newLogger(fmt.Sprintf(format, arg), zerolog.ErrorLevel, optional...)
+func Error(format string, arg ...any) {
+	for n := range arg {
+		if e, ok := arg[n].(error); ok {
+			arg[n] = e.Error()
+		}
+	}
+
+	newLogger(fmt.Sprintf(format, arg), zerolog.ErrorLevel, DisplayPos)
 }
 
-func newLogger(msg interface{}, level zerolog.Level, optional ...string) {
+func newLogger(msg interface{}, level zerolog.Level, optional ...any) {
 	l := pool.Get().(*Logger)
 
 	m := map[string]bool{}
 	for _, v := range optional {
-		m[v] = true
+		m[v.(string)] = true
 	}
 
 	ptr, file, line, _ := runtime.Caller(2)
 	l.Caller = runtime.FuncForPC(ptr).Name()
 
-	if m[pos] {
+	if m[DisplayPos] {
 		l.Pos = file + ": " + strconv.Itoa(line)
 	}
 
