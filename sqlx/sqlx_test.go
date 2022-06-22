@@ -9,7 +9,7 @@ import (
 	"jw.lib/conf"
 )
 
-func Test_pg(t *testing.T) {
+func Test_pgGet(t *testing.T) {
 	Register(DefaultSqlDriver, conf.APP_PG_ADDR.Value(DefaultSqlAddr))
 
 	stmt, err := GetSqlOperator().Prepare("select * from test")
@@ -36,4 +36,17 @@ func Test_pg(t *testing.T) {
 	}
 
 	fmt.Println(list)
+}
+
+func Test_pgAdd(t *testing.T) {
+	Register(DefaultSqlDriver, conf.APP_PG_ADDR.Value(DefaultSqlAddr))
+	stmt, err := GetSqlOperator().Prepare(`insert into test_text(t,id) values ($1, $2)`)
+	if err != nil {
+		fmt.Println(err)
+		return
+	}
+	_, err = stmt.Exec("777", 2)
+	if err != nil {
+		log.Fatal().Err(err)
+	}
 }

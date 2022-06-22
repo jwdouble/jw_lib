@@ -1,8 +1,9 @@
 package conf
 
 import (
-	"github.com/spf13/viper"
 	"sync"
+
+	"github.com/spf13/viper"
 )
 
 type EnvVar string
@@ -42,7 +43,7 @@ func (e EnvVar) GetEnv() string {
 	viper.SetEnvPrefix("k8s")
 	err := viper.BindEnv(e.String())
 	if err != nil {
-		panic(err)
+		return ""
 	}
 
 	return viper.GetString(e.String())
