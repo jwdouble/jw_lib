@@ -16,23 +16,28 @@ func NewBinaryTree(src []int) *TreeNode {
 		return &TreeNode{}
 	}
 
-	root := &TreeNode{Val: src[0]}
-	var pre, next []*TreeNode
 	var node *TreeNode
+	var pre, next []*TreeNode
+	root := &TreeNode{Val: src[0]}
 	pre = append(pre, root)
-	var isLeft = true
 
 	i, j := 0, 1
+	var isLeft = true
 	for len(pre) != 0 {
 		for ; i < len(pre) && j < len(src); j++ {
 			node = pre[i]
 			if isLeft {
-				node.Left = &TreeNode{Val: src[j]}
-				next = append(next, node.Left)
+				if src[j] != -999 {
+					node.Left = &TreeNode{Val: src[j]}
+					next = append(next, node.Left)
+				}
+
 				isLeft = false
 			} else {
-				node.Right = &TreeNode{Val: src[j]}
-				next = append(next, node.Right)
+				if src[j] != -999 {
+					node.Right = &TreeNode{Val: src[j]}
+					next = append(next, node.Right)
+				}
 				isLeft = true
 				i++
 			}
