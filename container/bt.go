@@ -1,5 +1,9 @@
 package container
 
+import (
+	"fmt"
+)
+
 // binary tree
 
 type TreeNode struct {
@@ -49,4 +53,14 @@ func NewBinaryTree(src []int) *TreeNode {
 	}
 
 	return root
+}
+
+func (root *TreeNode) LevelOrderTraversal() {
+	if root == nil {
+		fmt.Println("empty tree")
+		return
+	}
+
+	// TODO: To be continued...
+
 }
