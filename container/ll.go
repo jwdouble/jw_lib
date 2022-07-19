@@ -11,7 +11,7 @@ type ListNode struct {
 	Next *ListNode
 }
 
-func New(src []int) *ListNode {
+func NewLinkList(src []int) *ListNode {
 	if len(src) == 0 {
 		return nil
 	}
