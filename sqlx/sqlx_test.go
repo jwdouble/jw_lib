@@ -10,7 +10,7 @@ import (
 )
 
 func Test_pgGet(t *testing.T) {
-	Register(DefaultSqlDriver, conf.APP_PG_ADDR.Value(DefaultSqlAddr))
+	Register(Driver, conf.APP_PG_ADDR.Value(""))
 
 	stmt, err := GetSqlOperator().Prepare("select * from test")
 	if err != nil {
@@ -39,7 +39,7 @@ func Test_pgGet(t *testing.T) {
 }
 
 func Test_pgAdd(t *testing.T) {
-	Register(DefaultSqlDriver, conf.APP_PG_ADDR.Value(DefaultSqlAddr))
+	Register(Driver, conf.APP_PG_ADDR.Value(""))
 	stmt, err := GetSqlOperator().Prepare(`insert into test_text(t,id) values ($1, $2)`)
 	if err != nil {
 		fmt.Println(err)

@@ -10,7 +10,6 @@ var pool sync.Map
 
 const (
 	DefaultRedisAddr = "150.158.7.96:6379"
-	RedisPwd         = "jw"
 )
 
 func Register(addr, pwd string) {

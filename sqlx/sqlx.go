@@ -7,17 +7,16 @@ import (
 	_ "github.com/lib/pq"
 )
 
-// TODO config
-
 var pool sync.Map
 
 type SqlMod struct {
 	db *sql.DB
 }
 
+// TODO: pg的注册还可以优化
+
 const (
-	DefaultSqlDriver = "postgres"
-	DefaultSqlAddr   = "host=150.158.7.96 user=postgres password=p1ssw0rd dbname=jwdouble port=5432 sslmode=disable TimeZone=Asia/Shanghai"
+	Driver = "postgres"
 )
 
 func Register(driver, addr string) {
@@ -34,7 +33,7 @@ func GetSqlOperator(dbName ...string) *sql.DB {
 	var val interface{}
 
 	if len(dbName) == 0 {
-		val, _ = pool.Load(DefaultSqlDriver)
+		val, _ = pool.Load(Driver)
 	} else {
 		val, _ = pool.Load(dbName[0])
 	}

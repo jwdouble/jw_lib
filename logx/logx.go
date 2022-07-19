@@ -56,7 +56,7 @@ var (
 
 func logToPg(l *Logger) {
 	oncePg.Do(func() {
-		sqlx.Register(sqlx.DefaultSqlDriver, conf.APP_PG_ADDR.Value(sqlx.DefaultSqlAddr))
+		sqlx.Register(sqlx.Driver, conf.APP_PG_ADDR.Value(sqlx.DefaultSqlAddr))
 	})
 
 	cli := sqlx.GetSqlOperator()

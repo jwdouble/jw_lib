@@ -8,7 +8,7 @@ import (
 
 type EnvVar string
 
-const CONF_FILE_PATH = "../config.yaml"
+const CONF_FILE_PATH = "../config1.yaml"
 
 const (
 	APP_PORT       EnvVar = "APP_PORT"
@@ -40,7 +40,6 @@ func (e EnvVar) Value(v string) string {
 }
 
 func (e EnvVar) GetEnv() string {
-	viper.SetEnvPrefix("k8s")
 	err := viper.BindEnv(e.String())
 	if err != nil {
 		return ""
