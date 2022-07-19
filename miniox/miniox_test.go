@@ -1,4 +1,4 @@
-package minix
+package miniox
 
 import (
 	"context"

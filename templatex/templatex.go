@@ -18,21 +18,21 @@ type templateInfo struct {
 	Content     string
 }
 
-func New() templatex {
+func New() *templateInfo {
 	return &templateInfo{}
 }
 
-func (t *templateInfo) SetName(s string) templatex {
+func (t *templateInfo) SetName(s string) *templateInfo {
 	t.Name = s
 	return t
 }
 
-func (t *templateInfo) SetDescription(s string) templatex {
+func (t *templateInfo) SetDescription(s string) *templateInfo {
 	t.Description = s
 	return t
 }
 
-func (t *templateInfo) SetContent(s string) templatex {
+func (t *templateInfo) SetContent(s string) *templateInfo {
 	t.Content = s
 	return t
 }

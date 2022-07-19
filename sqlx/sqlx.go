@@ -2,6 +2,7 @@ package sqlx
 
 import (
 	"database/sql"
+	"jw.lib/toolx"
 	"sync"
 
 	_ "github.com/lib/pq"
@@ -19,7 +20,8 @@ const (
 	Driver = "postgres"
 )
 
-func Register(driver, addr string) {
+func Register(driver string, cm map[string]string) {
+	addr := toolx.RenderString("host=${host} user=${user} password=${password} dbname=${dbname} port=${port} ", cm)
 	db, err := sql.Open(driver, addr)
 	if err != nil {
 		panic(err)
