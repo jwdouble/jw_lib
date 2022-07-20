@@ -11,7 +11,6 @@ func TestEnvVar_GetEnv(t *testing.T) {
 }
 
 func Test_envVar(t *testing.T) {
-	fmt.Println(APP_PORT.Value("haha"))
-	os.Setenv("K8S_APP_PORT", "xxx")
-	fmt.Println(APP_PORT.Value("kkk"))
+	//os.Setenv("GO_COMMON_PASSWORD", "jw")
+	fmt.Println(os.Getenv("GO_COMMON_PASSWORD"))
 }

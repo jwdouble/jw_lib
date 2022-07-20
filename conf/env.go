@@ -11,9 +11,7 @@ type EnvVar string
 const CONF_FILE_PATH = "../config1.yaml"
 
 const (
-	APP_PORT       EnvVar = "APP_PORT"
-	APP_PG_ADDR    EnvVar = "APP_PG_ADDR"
-	APP_REDIS_ADDR EnvVar = "APP_REDIS_ADDR"
+	COMMON_PASSWORD EnvVar = "GO_COMMON_PASSWORD"
 )
 
 var sm sync.Map

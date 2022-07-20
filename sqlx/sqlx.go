@@ -2,8 +2,10 @@ package sqlx
 
 import (
 	"database/sql"
-	"jw.lib/toolx"
+	"fmt"
 	"sync"
+
+	"jw.lib/toolx"
 
 	_ "github.com/lib/pq"
 )
@@ -22,6 +24,7 @@ const (
 
 func Register(driver string, cm map[string]string) {
 	addr := toolx.RenderString("host=${host} user=${user} password=${password} dbname=${dbname} port=${port} ", cm)
+	fmt.Println(addr)
 	db, err := sql.Open(driver, addr)
 	if err != nil {
 		panic(err)

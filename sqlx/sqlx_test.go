@@ -9,8 +9,18 @@ import (
 	"jw.lib/conf"
 )
 
+var PGConfigMap = map[string]string{
+	"host":     "150.158.7.96",
+	"user":     "postgres",
+	"password": conf.COMMON_PASSWORD.Value("xxx"),
+	"dbname":   "postgres",
+	"port":     "5432",
+	"suffix":   "sslmode=disable TimeZone=Asia/Shanghai",
+}
+
 func Test_pgGet(t *testing.T) {
-	Register(Driver, conf.APP_PG_ADDR.Value(""))
+
+	Register(Driver, PGConfigMap)
 
 	stmt, err := GetSqlOperator().Prepare("select * from test")
 	if err != nil {
@@ -39,7 +49,7 @@ func Test_pgGet(t *testing.T) {
 }
 
 func Test_pgAdd(t *testing.T) {
-	Register(Driver, conf.APP_PG_ADDR.Value(""))
+	Register(Driver, PGConfigMap)
 	stmt, err := GetSqlOperator().Prepare(`insert into test_text(t,id) values ($1, $2)`)
 	if err != nil {
 		fmt.Println(err)
