@@ -5,24 +5,13 @@ import (
 	"testing"
 
 	"github.com/rs/zerolog/log"
-
-	"jw.lib/conf"
 )
-
-var PGConfigMap = map[string]string{
-	"host":     "150.158.7.96",
-	"user":     "postgres",
-	"password": conf.COMMON_PASSWORD.Value("xxx"),
-	"dbname":   "postgres",
-	"port":     "5432",
-	"suffix":   "sslmode=disable TimeZone=Asia/Shanghai",
-}
 
 func Test_pgGet(t *testing.T) {
 
 	Register(Driver, PGConfigMap)
 
-	stmt, err := GetSqlOperator().Prepare("select * from test")
+	stmt, err := GetSqlOperator().Prepare("select * from test_text")
 	if err != nil {
 		log.Print(err)
 		return
@@ -37,12 +26,13 @@ func Test_pgGet(t *testing.T) {
 	var list []string
 	for r.Next() {
 		id := ""
-		err = r.Scan(&id)
+		text := ""
+		err = r.Scan(&id, &text)
 		if err != nil {
 			log.Print(err)
 			return
 		}
-		list = append(list, id)
+		list = append(list, text)
 	}
 
 	fmt.Println(list)

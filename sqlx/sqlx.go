@@ -2,9 +2,9 @@ package sqlx
 
 import (
 	"database/sql"
-	"fmt"
 	"sync"
 
+	"jw.lib/conf"
 	"jw.lib/toolx"
 
 	_ "github.com/lib/pq"
@@ -22,9 +22,17 @@ const (
 	Driver = "postgres"
 )
 
+var PGConfigMap = map[string]string{
+	"host":     "150.158.7.96",
+	"user":     "postgres",
+	"password": conf.COMMON_PASSWORD.Value("xxx"),
+	"dbname":   "jwdouble",
+	"port":     "5432",
+	"suffix":   "sslmode=disable TimeZone=Asia/Shanghai",
+}
+
 func Register(driver string, cm map[string]string) {
 	addr := toolx.RenderString("host=${host} user=${user} password=${password} dbname=${dbname} port=${port} ", cm)
-	fmt.Println(addr)
 	db, err := sql.Open(driver, addr)
 	if err != nil {
 		panic(err)

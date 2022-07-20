@@ -4,12 +4,10 @@ import (
 	"fmt"
 	"testing"
 	"time"
-
-	"jw.lib/conf"
 )
 
 func Test_redis(t *testing.T) {
-	Register(conf.APP_REDIS_ADDR.Value(DefaultRedisAddr), "")
+	Register(RedisConfigMap)
 
 	GetRdxOperator().Set("test", "1", time.Minute)
 
