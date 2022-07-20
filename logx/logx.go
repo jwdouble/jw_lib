@@ -18,8 +18,6 @@ import (
 
 const DisplayPos = "pos"
 
-type logStr string
-
 var pool = sync.Pool{
 	New: func() interface{} {
 		return &Logger{std: conf.Get("lib.logx.driver")}
@@ -56,7 +54,7 @@ var (
 
 func logToPg(l *Logger) {
 	oncePg.Do(func() {
-		sqlx.Register(sqlx.Driver, conf.APP_PG_ADDR.Value(sqlx.DefaultSqlAddr))
+		sqlx.Register(sqlx.Driver, sqlx.PGConfigMap)
 	})
 
 	cli := sqlx.GetSqlOperator()
@@ -75,7 +73,7 @@ func logToPg(l *Logger) {
 
 func logToRedis(l *Logger) {
 	onceRedis.Do(func() {
-		rdx.Register(conf.APP_REDIS_ADDR.Value(rdx.DefaultRedisAddr), "jw")
+		rdx.Register(rdx.RedisConfigMap)
 	})
 
 	cli := rdx.GetRdxOperator()
