@@ -1,16 +1,16 @@
 package conf
 
 import (
-	"fmt"
-
 	"github.com/spf13/viper"
+
+	"jw.lib/logx"
 )
 
 func Get(key string) string {
 	viper.SetConfigFile(CONF_FILE_PATH)
 	err := viper.ReadInConfig()
 	if err != nil {
-		fmt.Println(err)
+		logx.Errorf(err, "viper.ReadInConfig")
 		return ""
 	}
 

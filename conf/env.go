@@ -4,6 +4,8 @@ import (
 	"sync"
 
 	"github.com/spf13/viper"
+
+	"jw.lib/logx"
 )
 
 type EnvVar string
@@ -23,8 +25,7 @@ func (e EnvVar) String() string {
 func (e EnvVar) Value(v string) string {
 	es := e.String()
 	// 预存值, 如果环境变量已配置用环境变量覆盖
-	v1 := e.GetEnv()
-	if v1 != "" {
+	if v1 := e.GetEnv(); v1 != "" {
 		sm.Store(es, v1)
 	} else {
 		sm.Store(es, v)
@@ -32,7 +33,7 @@ func (e EnvVar) Value(v string) string {
 
 	val, ok := sm.Load(es)
 	if !ok {
-		panic("env key: " + es + " not exist")
+		logx.Fatalf("env var %s not found", es)
 	}
 	return val.(string)
 }
