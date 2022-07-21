@@ -3,6 +3,7 @@ package logx
 import (
 	"errors"
 	"testing"
+	"time"
 
 	"github.com/rs/zerolog"
 	"github.com/rs/zerolog/log"
@@ -27,6 +28,24 @@ func Test_zerolog(t *testing.T) {
 
 	err := errors.New("seems we have an error here")
 	log.Error().Err(err).Msg("haha")
+}
+
+func Test_zerlogTrace(t *testing.T) {
+	// once this method is called, the *Event should be disposed. Calling Msg twice can have unexpected result. ???
+	go func() {
+		log.Info().Msg("hello world")
+		log.Info().Msg("hello world")
+	}()
+	go func() {
+		log.Info().Msg("xxxxxxxx")
+		log.Info().Msg("xxxxxxxx")
+	}()
+	go func() {
+		log.Info().Msg("111")
+		log.Info().Msg("111")
+	}()
+
+	time.Sleep(time.Second)
 }
 
 func Test_mylog(t *testing.T) {
