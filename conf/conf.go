@@ -6,13 +6,22 @@ import (
 	"jw.lib/logx"
 )
 
-func Get(key string) string {
-	viper.SetConfigFile(CONF_FILE_PATH)
-	err := viper.ReadInConfig()
+var vip *viper.Viper
+
+func init() {
+	vip = viper.New()
+
+	vip.SetConfigFile(CONF_FILE_PATH)
+	err := vip.ReadInConfig()
 	if err != nil {
 		logx.Errorf(err, "viper.ReadInConfig")
+	}
+}
+
+func Get(key string) string {
+	val := vip.Get(key)
+	if val == nil {
 		return ""
 	}
-
-	return viper.Get(key).(string)
+	return val.(string)
 }

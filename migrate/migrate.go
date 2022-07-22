@@ -33,7 +33,8 @@ func NewWithFs(fs fs.FS, path string, db *sql.DB) {
 	m.Log = logger{}
 
 	err = m.Up()
-	if err != nil {
+
+	if err != nil && err != migrate.ErrNoChange {
 		logx.Errorf(err, "migrate.Up")
 	}
 }

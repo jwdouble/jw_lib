@@ -3,17 +3,16 @@ package conf
 import (
 	"sync"
 
-	"github.com/spf13/viper"
-
 	"jw.lib/logx"
 )
 
 type EnvVar string
 
-const CONF_FILE_PATH = "../config1.yaml"
+const CONF_FILE_PATH = "./config.yaml"
 
 const (
 	COMMON_PASSWORD EnvVar = "GO_COMMON_PASSWORD"
+	SERVER_PORT     EnvVar = "GO_SERVER_PORT"
 )
 
 var sm sync.Map
@@ -39,10 +38,10 @@ func (e EnvVar) Value(v string) string {
 }
 
 func (e EnvVar) GetEnv() string {
-	err := viper.BindEnv(e.String())
+	err := vip.BindEnv(e.String())
 	if err != nil {
 		return ""
 	}
 
-	return viper.GetString(e.String())
+	return vip.GetString(e.String())
 }
