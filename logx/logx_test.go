@@ -4,50 +4,14 @@ import (
 	"errors"
 	"fmt"
 	"testing"
-	"time"
-
-	"github.com/rs/zerolog"
-	"github.com/rs/zerolog/log"
 
 	"jw.lib/rdx"
-	"jw.lib/timex"
 )
 
 func Test_zerolog(t *testing.T) {
-	zerolog.TimeFieldFormat = timex.DateTimeFormat
+	KV("app", "test1")
 
-	log.Print("hello world")
-	log.Info().Msg("hello world")
-
-	log.Debug().
-		Str("Scale", "833 cents").
-		Float64("Interval", 833.09).
-		Msg("Fibonacci is everywhere")
-
-	log.Debug().
-		Str("Name", "Tom").
-		Send() // Send is equivalent to calling Msg("")
-
-	err := errors.New("seems we have an error here")
-	log.Error().Err(err).Msg("haha")
-}
-
-func Test_zerlogTrace(t *testing.T) {
-	// once this method is called, the *Event should be disposed. Calling Msg twice can have unexpected result. ???
-	go func() {
-		log.Info().Msg("hello world")
-		log.Info().Msg("hello world")
-	}()
-	go func() {
-		log.Info().Msg("xxxxxxxx")
-		log.Info().Msg("xxxxxxxx")
-	}()
-	go func() {
-		log.Info().Msg("111")
-		log.Info().Msg("111")
-	}()
-
-	time.Sleep(time.Second)
+	Infof("INFO TEST6")
 }
 
 func Test_mylog(t *testing.T) {
@@ -67,5 +31,11 @@ func Test_redis(t *testing.T) {
 		return
 	}
 
+	fmt.Println("log from redis -->", r)
+
+	r = sc.Val()
+	fmt.Println("log from redis -->", r)
+
+	r = sc.String()
 	fmt.Println("log from redis -->", r)
 }
