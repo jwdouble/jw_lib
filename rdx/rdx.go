@@ -19,13 +19,17 @@ var RedisConfigMap = map[string]string{
 	"password": conf.COMMON_PASSWORD.Value("xxx"),
 }
 
-func Register(m map[string]string) {
+func Register(m map[string]string, rdxName ...string) {
 	cli := redis.NewClient(&redis.Options{
 		Addr:     m["addr"],
 		Password: m["password"],
 	})
 
-	pool.LoadOrStore("redis", cli)
+	if len(rdxName) == 0 {
+		pool.LoadOrStore("redis", cli)
+	} else {
+		pool.LoadOrStore(rdxName[0], cli)
+	}
 }
 
 func GetRdxOperator(rdxName ...string) *redis.Client {

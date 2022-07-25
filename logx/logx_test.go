@@ -9,7 +9,9 @@ import (
 )
 
 func Test_zerolog(t *testing.T) {
-	KV("app", "test1")
+	Infof("INFO TEST1")
+
+	KV("app", "jw-lib")
 
 	Infof("INFO TEST6")
 }
@@ -20,22 +22,21 @@ func Test_mylog(t *testing.T) {
 }
 
 func Test_redis(t *testing.T) {
-	KV("app", "test")
+	//KV("app", "test")
+	//
+	//Infof("INFO TEST")
+	sc := rdx.GetRdxOperator().LPop("logx")
 
-	Infof("INFO TEST")
+	r := sc.Val()
+	fmt.Println("log from redis -->", r)
 
-	sc := rdx.GetRdxOperator().RPop("logx")
+	r = sc.String()
+	fmt.Println("log from redis -->", r)
+
 	r, err := sc.Result()
 	if err != nil {
 		fmt.Println(err)
 		return
 	}
-
-	fmt.Println("log from redis -->", r)
-
-	r = sc.Val()
-	fmt.Println("log from redis -->", r)
-
-	r = sc.String()
 	fmt.Println("log from redis -->", r)
 }
