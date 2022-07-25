@@ -1,9 +1,8 @@
 package conf
 
 import (
+	"log"
 	"sync"
-
-	"jw.lib/logx"
 )
 
 type EnvVar string
@@ -32,7 +31,7 @@ func (e EnvVar) Value(v string) string {
 
 	val, ok := sm.Load(es)
 	if !ok {
-		logx.Fatalf("env var %s not found", es)
+		log.Fatalf("env var %s not found", es)
 	}
 	return val.(string)
 }

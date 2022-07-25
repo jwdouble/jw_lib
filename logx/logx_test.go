@@ -2,12 +2,14 @@ package logx
 
 import (
 	"errors"
+	"fmt"
 	"testing"
 	"time"
 
 	"github.com/rs/zerolog"
 	"github.com/rs/zerolog/log"
 
+	"jw.lib/rdx"
 	"jw.lib/timex"
 )
 
@@ -54,14 +56,14 @@ func Test_mylog(t *testing.T) {
 }
 
 func Test_redis(t *testing.T) {
-	//Info("INFO TEST")
-	//
-	//sc := rdx.GetRdxOperator().RPop("logx")
-	//r, err := sc.Result()
-	//if err != nil {
-	//	fmt.Println(err)
-	//	return
-	//}
-	//
-	//fmt.Println(r)
+	Infof("INFO TEST")
+
+	sc := rdx.GetRdxOperator().RPop("logx")
+	r, err := sc.Result()
+	if err != nil {
+		fmt.Println(err)
+		return
+	}
+
+	fmt.Println("log from redis -->", r)
 }

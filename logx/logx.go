@@ -1,8 +1,6 @@
 package logx
 
 import (
-	"os"
-
 	"github.com/rs/zerolog"
 
 	"jw.lib/timex"
@@ -26,7 +24,7 @@ type Log struct {
 	zerolog.Logger
 }
 
-var rootLogger = zerolog.New(os.Stderr).With().Timestamp().Logger()
+var rootLogger = zerolog.New(NewIoWriter()).With().Timestamp().Logger()
 
 func init() {
 	zerolog.LevelFieldName = "l"
