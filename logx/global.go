@@ -24,3 +24,8 @@ func Fatalf(str string, arg ...interface{}) {
 	l := getLogger()
 	l.Fatal().Msgf(str, arg...)
 }
+
+func KV(key string, value interface{}) {
+	l := getLogger()
+	l.KV(key, value)
+}

@@ -24,7 +24,7 @@ type Log struct {
 	zerolog.Logger
 }
 
-var rootLogger = zerolog.New(NewIoWriter()).With().Timestamp().Logger()
+var rootLog = Log{zerolog.New(NewIoWriter()).With().Timestamp().Logger()}
 
 func init() {
 	zerolog.LevelFieldName = "l"
@@ -33,8 +33,9 @@ func init() {
 	zerolog.MessageFieldName = "msg"
 }
 
-func getLogger() Log {
-	return Log{rootLogger}
+// 这里如果返回的是非指针结构体，KV失效。探究
+func getLogger() *Log {
+	return &rootLog
 }
 
 func (l *Log) Debugf(str string, arg ...interface{}) {
@@ -59,4 +60,8 @@ func (l *Log) Errorf(err error, str string, arg ...interface{}) {
 
 func (l *Log) Fatalf(str string, arg ...interface{}) {
 	l.Fatal().Msgf(str, arg...)
+}
+
+func (l *Log) KV(key string, value interface{}) {
+	l.Logger = l.Logger.With().Interface(key, value).Logger()
 }

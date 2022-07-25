@@ -56,6 +56,8 @@ func Test_mylog(t *testing.T) {
 }
 
 func Test_redis(t *testing.T) {
+	KV("app", "test")
+
 	Infof("INFO TEST")
 
 	sc := rdx.GetRdxOperator().RPop("logx")
