@@ -2,27 +2,27 @@ package logx
 
 func Debugf(str string, arg ...interface{}) {
 	l := getLogger()
-	l.Debug().Msgf(str, arg...)
+	l.Debugf(str, arg...)
 }
 
 func Infof(str string, arg ...interface{}) {
 	l := getLogger()
-	l.Info().Msgf(str, arg...)
+	l.Infof(str, arg...)
 }
 
 func Warnf(str string, arg ...interface{}) {
 	l := getLogger()
-	l.Warn().Msgf(str, arg...)
+	l.Warnf(str, arg...)
 }
 
 func Errorf(err error, str string, arg ...interface{}) {
-	l := getLogger()
+	l := getErrLogger()
 	l.Errorf(err, str, arg...)
 }
 
 func Fatalf(str string, arg ...interface{}) {
 	l := getLogger()
-	l.Fatal().Msgf(str, arg...)
+	l.Fatalf(str, arg...)
 }
 
 func KV(key string, value interface{}) {

@@ -25,17 +25,23 @@ type Log struct {
 }
 
 var rootLog = Log{zerolog.New(NewIoWriter()).With().Timestamp().Logger()}
+var errLog = Log{zerolog.New(NewIoWriter()).With().Caller().Timestamp().Logger()}
 
 func init() {
 	zerolog.LevelFieldName = "l"
 	zerolog.TimestampFieldName = "t"
 	zerolog.TimeFieldFormat = timex.DateTimeFormat
 	zerolog.MessageFieldName = "msg"
+	zerolog.CallerSkipFrameCount = 4
 }
 
 // 这里如果返回的是非指针结构体，KV失效。探究
 func getLogger() *Log {
 	return &rootLog
+}
+
+func getErrLogger() *Log {
+	return &errLog
 }
 
 func (l *Log) Debugf(str string, arg ...interface{}) {

@@ -5,6 +5,9 @@ import (
 	"fmt"
 	"testing"
 
+	"github.com/rs/zerolog"
+	"github.com/rs/zerolog/log"
+
 	"jw.lib/rdx"
 )
 
@@ -39,4 +42,20 @@ func Test_redis(t *testing.T) {
 		return
 	}
 	fmt.Println("log from redis -->", r)
+}
+
+func Test_xx(t *testing.T) {
+	l := GetE()
+
+	l.Debug().Caller().Msg("test")
+}
+
+func GetE() zerolog.Logger {
+	l := log.With().Caller().Logger()
+	return l
+}
+
+func Test_err(t *testing.T) {
+	err := errors.New("haha")
+	Errorf(err, "this is error %s", "test")
 }
