@@ -3,7 +3,7 @@ package rdx
 import (
 	"sync"
 
-	"github.com/go-redis/redis"
+	"github.com/go-redis/redis/v8"
 
 	"jw.lib/conf"
 )

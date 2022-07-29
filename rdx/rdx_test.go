@@ -1,6 +1,7 @@
 package rdx
 
 import (
+	"context"
 	"fmt"
 	"testing"
 	"time"
@@ -9,8 +10,8 @@ import (
 func Test_redis(t *testing.T) {
 	Register(RedisConfigMap)
 
-	GetRdxOperator().Set("test", "1", time.Minute)
+	GetRdxOperator().Set(context.Background(), "test", "1", time.Minute)
 
-	cmd := GetRdxOperator().Get("test")
+	cmd := GetRdxOperator().Get(context.Background(), "test")
 	fmt.Println(cmd.Val())
 }

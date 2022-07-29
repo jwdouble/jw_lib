@@ -3,7 +3,9 @@ package logx
 import (
 	"errors"
 	"fmt"
+	"sync/atomic"
 	"testing"
+	"time"
 
 	"github.com/rs/zerolog"
 	"github.com/rs/zerolog/log"
@@ -16,7 +18,7 @@ func Test_zerolog(t *testing.T) {
 
 	KV("app", "jw-lib")
 
-	Infof("INFO TEST6")
+	Infof("INFO 2")
 }
 
 func Test_mylog(t *testing.T) {
@@ -58,4 +60,13 @@ func GetE() zerolog.Logger {
 func Test_err(t *testing.T) {
 	err := errors.New("haha")
 	Errorf(err, "this is error %s", "test")
+}
+
+func Test_logGo(t *testing.T) {
+	var i int32
+	for i = 0; i < 10000; i++ {
+		atomic.StoreInt32(&i, i)
+		go Infof("INFO TEST %v", atomic.LoadInt32(&i))
+	}
+	time.Sleep(10 * time.Second)
 }
