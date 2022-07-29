@@ -1,6 +1,7 @@
 package logx
 
 import (
+	"context"
 	"errors"
 	"fmt"
 	"sync/atomic"
@@ -30,7 +31,7 @@ func Test_redis(t *testing.T) {
 	//KV("app", "test")
 	//
 	//Infof("INFO TEST")
-	sc := rdx.GetRdxOperator().LPop("logx")
+	sc := rdx.GetRdxOperator().LPop(context.Background(), "logx")
 
 	r := sc.Val()
 	fmt.Println("log from redis -->", r)
