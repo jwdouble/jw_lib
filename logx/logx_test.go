@@ -34,17 +34,17 @@ func Test_redis(t *testing.T) {
 	sc := rdx.GetRdxOperator().LPop(context.Background(), "logx")
 
 	r := sc.Val()
-	fmt.Println("log from redis -->", r)
+	fmt.Println("commonLog from redis -->", r)
 
 	r = sc.String()
-	fmt.Println("log from redis -->", r)
+	fmt.Println("commonLog from redis -->", r)
 
 	r, err := sc.Result()
 	if err != nil {
 		fmt.Println(err)
 		return
 	}
-	fmt.Println("log from redis -->", r)
+	fmt.Println("commonLog from redis -->", r)
 }
 
 func Test_xx(t *testing.T) {

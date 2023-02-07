@@ -7,7 +7,7 @@ import (
 )
 
 func TestEnvVar_GetEnv(t *testing.T) {
-	Get("lib.logx.redis")
+	t.Log(Get("lib.logx.redis"))
 }
 
 func Test_envVar(t *testing.T) {

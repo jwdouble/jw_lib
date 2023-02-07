@@ -1,6 +1,8 @@
 package rdx
 
 import (
+	"context"
+	"log"
 	"sync"
 
 	"github.com/go-redis/redis/v8"
@@ -25,6 +27,12 @@ func Register(m map[string]string, rdxName ...string) {
 		Password: m["password"],
 	})
 
+	_, err := cli.Ping(context.Background()).Result()
+	if err != nil {
+		log.Println("rdx.Register: redis.Ping failed: ", err)
+		return
+	}
+
 	if len(rdxName) == 0 {
 		pool.LoadOrStore("redis", cli)
 	} else {
@@ -46,5 +54,5 @@ func GetRdxOperator(rdxName ...string) *redis.Client {
 		return res
 	}
 
-	panic("redis not register")
+	return nil
 }

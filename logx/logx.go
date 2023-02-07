@@ -24,7 +24,7 @@ type Log struct {
 	zerolog.Logger
 }
 
-var rootLog = Log{zerolog.New(NewIoWriter()).With().Timestamp().Logger()}
+var commonLog = Log{zerolog.New(NewIoWriter()).With().Timestamp().Logger()}
 var errLog = Log{zerolog.New(NewIoWriter()).With().Caller().Timestamp().Logger()}
 
 func init() {
@@ -37,7 +37,7 @@ func init() {
 
 // 这里如果返回的是非指针结构体，KV失效。探究
 func getLogger() *Log {
-	return &rootLog
+	return &commonLog
 }
 
 func getErrLogger() *Log {

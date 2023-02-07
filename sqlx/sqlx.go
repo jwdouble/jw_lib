@@ -16,14 +16,12 @@ type SqlMod struct {
 	db *sql.DB
 }
 
-// TODO: pg的注册还可以优化
-
 const (
 	Driver = "postgres"
 )
 
 var PGConfigMap = map[string]string{
-	"host":     "150.158.7.96",
+	"host":     "0.0.0.0",
 	"user":     "postgres",
 	"password": conf.COMMON_PASSWORD.Value("xxx"),
 	"dbname":   "jwdouble",
